@@ -1,0 +1,151 @@
+# ─────────────────────────────────────────────
+# DRNet — Git Ignore File
+# Diabetic Retinopathy Classification Project
+# ─────────────────────────────────────────────
+
+# ── Python ─────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ── Virtual Environments ───────────────────────
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# ── IDE & Editor Files ───────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ── Jupyter Notebooks ─────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ── PyTorch & Model Files ────────────────────
+# Keep small config files, ignore large model files
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+# Exception: keep example/demo models under 10MB
+!models/*.pth
+!models/*.pt
+
+# ── Dataset & Data Files ────────────────────
+# Ignore actual images (too large for git)
+data/images/*.jpg
+data/images/*.jpeg
+data/images/*.png
+data/images/*.bmp
+data/images/*.tiff
+data/images/*.tif
+
+# Keep labels and small metadata files
+!data/labels.csv
+!data/*.txt
+!data/*.json
+
+# ── Training Outputs ───────────────────────────
+outputs/
+logs/
+wandb/
+mlruns/
+tensorboard_logs/
+*.log
+
+# ── Temporary Files ───────────────────────────
+tmp/
+temp/
+*.tmp
+*.temp
+.cache/
+*.cache
+
+# ── OS Generated Files ───────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ── Streamlit ───────────────────────────────
+.streamlit/
+
+# ── Grad-CAM Outputs ────────────────────────
+# Keep source code, ignore generated visualizations
+*.png
+*.jpg
+*.jpeg
+!docs/*.png
+!docs/*.jpg
+!README.md
+
+# ── Configuration Files (keep examples) ───────
+config.json
+config.yaml
+config.yml
+!configs/*.json
+!configs/*.yaml
+!configs/*.yml
+
+# ── Documentation Build ───────────────────────
+docs/_build/
+site/
+
+# ── Coverage & Testing ───────────────────────
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# ── Package Management ───────────────────────
+environment.yml
+requirements-dev.txt
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ── Security ───────────────────────────────────
+.env
+.env.local
+.env.*.local
+secrets.txt
+*.key
+*.pem
+
+# ── Backup Files ─────────────────────────────
+*.bak
+*.backup
+*.old
+*.orig
