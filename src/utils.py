@@ -15,6 +15,7 @@ import os
 import random
 import logging
 import json
+import psutil
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Optional
@@ -140,11 +141,50 @@ def get_device() -> torch.device:
     if torch.cuda.is_available():
         device = torch.device("cuda")
         gpu_name = torch.cuda.get_device_name(0)
-        logger.info(f"Using GPU: {gpu_name}")
+        gpu_memory = torch.cuda.get_device_properties(0).total_memory / 1024**3  # GB
+        logger.info(f"Using GPU: {gpu_name} ({gpu_memory:.1f}GB)")
     else:
         device = torch.device("cpu")
         logger.warning("CUDA not available. Using CPU — training will be slow.")
     return device
+
+
+def get_memory_usage() -> Dict[str, float]:
+    """
+    Get current memory usage (RAM and GPU if available).
+    
+    Returns:
+        Dictionary with memory usage in GB
+    """
+    memory_info = {}
+    
+    # System RAM
+    memory = psutil.virtual_memory()
+    memory_info["ram_used_gb"] = memory.used / 1024**3
+    memory_info["ram_total_gb"] = memory.total / 1024**3
+    memory_info["ram_percent"] = memory.percent
+    
+    # GPU memory if available
+    if torch.cuda.is_available():
+        memory_info["gpu_used_gb"] = torch.cuda.memory_allocated() / 1024**3
+        memory_info["gpu_reserved_gb"] = torch.cuda.memory_reserved() / 1024**3
+        memory_info["gpu_total_gb"] = torch.cuda.get_device_properties(0).total_memory / 1024**3
+        memory_info["gpu_percent"] = (memory_info["gpu_used_gb"] / memory_info["gpu_total_gb"]) * 100
+    
+    return memory_info
+
+
+def log_memory_usage(prefix: str = "") -> None:
+    """Log current memory usage with optional prefix."""
+    memory = get_memory_usage()
+    logger = logging.getLogger(__name__)
+    
+    msg = f"{prefix}Memory: RAM {memory['ram_used_gb']:.1f}/{memory['ram_total_gb']:.1f}GB ({memory['ram_percent']:.1f}%)"
+    
+    if "gpu_used_gb" in memory:
+        msg += f" | GPU {memory['gpu_used_gb']:.1f}/{memory['gpu_total_gb']:.1f}GB ({memory['gpu_percent']:.1f}%)"
+    
+    logger.info(msg)
 
 
 # ─────────────────────────────────────────────

@@ -296,8 +296,9 @@ def get_kfold_dataloaders(
             shuffle=True,
             num_workers=num_workers,
             collate_fn=safe_collate,
-            pin_memory=True,
+            pin_memory=torch.cuda.is_available(),  # Only pin if GPU available
             drop_last=True,  # avoid batch-norm issues with size-1 batches
+            persistent_workers=True if num_workers > 0 else False,  # Keep workers alive
         )
         val_loader = DataLoader(
             val_subset,
@@ -305,7 +306,8 @@ def get_kfold_dataloaders(
             shuffle=False,
             num_workers=num_workers,
             collate_fn=safe_collate,
-            pin_memory=True,
+            pin_memory=torch.cuda.is_available(),  # Only pin if GPU available
+            persistent_workers=True if num_workers > 0 else False,  # Keep workers alive
         )
 
         folds.append((train_loader, val_loader))

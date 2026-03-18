@@ -72,8 +72,8 @@ DEFAULT_CONFIG = {
     # Training
     "n_folds":      5,
     "epochs":       80,
-    "batch_size":   16,
-    "num_workers":  2,
+    "batch_size":   32,  # Increase for larger dataset
+    "num_workers":  4,   # Increase for faster data loading
     "seed":         42,
 
     # Model
