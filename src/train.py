@@ -30,6 +30,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
+from tqdm import tqdm
 from sklearn.metrics import (
     accuracy_score,
     f1_score,
@@ -135,7 +136,7 @@ def train_one_epoch(
     all_labels = []
     n_batches  = 0
 
-    for batch_idx, (images, labels) in enumerate(loader):
+    for batch_idx, (images, labels) in enumerate(tqdm(loader, desc=f"Training Epoch {epoch}", leave=False)):
         # Skip corrupted batches returned by safe_collate
         if images is None:
             continue
@@ -202,7 +203,7 @@ def validate_one_epoch(
     all_probs   = []   # Softmax probabilities for AUC
     n_batches   = 0
 
-    for images, labels in loader:
+    for images, labels in tqdm(loader, desc="Validating", leave=False):
         if images is None:
             continue
 
@@ -351,7 +352,10 @@ def train_fold(
     best_metrics  = {}
     best_ckpt_path = output_dirs["checkpoints"] / f"best_fold{fold_display}.pth"
 
-    for epoch in range(1, config["epochs"] + 1):
+    epoch_progress = tqdm(range(1, config["epochs"] + 1), 
+                          desc=f"Fold {fold_display}/{config['n_folds']}", 
+                          unit="epoch")
+    for epoch in epoch_progress:
         # Train
         train_loss, train_acc = train_one_epoch(
             model, train_loader, criterion, optimizer, device, epoch
@@ -369,6 +373,14 @@ def train_fold(
         val_losses.append(val_metrics["val_loss"])
         train_accs.append(train_acc)
         val_accs.append(val_metrics["val_accuracy"])
+
+        # Update progress bar with metrics
+        epoch_progress.set_postfix({
+            'Loss': f"{train_loss:.3f}",
+            'Acc': f"{train_acc:.3f}",
+            'Val_F1': f"{val_metrics['val_f1']:.3f}",
+            'Val_Acc': f"{val_metrics['val_accuracy']:.3f}"
+        })
 
         # Log epoch summary
         logger.info(
